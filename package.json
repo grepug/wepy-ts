@@ -1,0 +1,9 @@
+{
+  "name": "wepy-ts",
+  "version": "0.0.1-alpha-7",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
+  "dependencies": {
+    "wepy": "^1.5.3"
+  }
+}
