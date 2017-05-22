@@ -2,12 +2,13 @@ import wepy = require('wepy')
 import { pageEvent } from '../lib/constants'
 
 export interface PageOptions {
-    components?: any[]
-    config: any
+    components?: any
+    config?: any
 }
 
-function pageFactory (components?, config?) {
-     return function (Constr, components?, config?): any {
+
+export function ComponentDecor(components?) {
+    return function (Constr): any {
 
         let instance = new Constr
 
@@ -22,52 +23,9 @@ function pageFactory (components?, config?) {
         Constr.eventNames && Constr.eventNames.forEach(name => events[name] = instance[name])
 
 
-        return class extends wepy.default.page {
+        class Component extends wepy.default.component {
 
-            components = components
-
-            config = config
-
-            data = data
-
-            methods = methods
-
-            events = events
-
-            onLoad () {
-                instance.onLoad && instance.onLoad.call(this)
-            }
-        }
-
-        // // assign pageEvents
-        // pageEvent.forEach(e => {
-        //     if (instance[e]) {
-        //         NewConstr.prototype[e] = instance[e]
-        //     }
-        // })
-
-        // return NewConstr
-    }
-}
-function componentFactory (components?, config?) {
-     return function (Constr, components?, config?): any {
-
-        let instance = new Constr
-
-        let data = {}
-
-        let methods = {}
-
-        let events = {}
-
-        Constr.dataNames && Constr.dataNames.forEach(name => data[name] = instance[name])
-        Constr.methodNames && Constr.methodNames.forEach(name => methods[name] = instance[name])
-        Constr.eventNames && Constr.eventNames.forEach(name => events[name] = instance[name])
-
-
-        class NewConstr extends wepy.default.component {
-
-            components = components
+            components = components || {}
 
             data = data
 
@@ -80,20 +38,57 @@ function componentFactory (components?, config?) {
         // assign pageEvents
         pageEvent.forEach(e => {
             if (instance[e]) {
-                NewConstr.prototype[e] = instance[e]
+                Component.prototype[e] = instance[e]
             }
         })
 
-        return NewConstr
+        return Component
     }
 }
 
-export function ComponentDecor(components) {
-    return componentFactory(components)
-}
+export function PageDecor(pageOptions: PageOptions = {}) {
+    return function (Constr): any {
 
-export function PageDecor(pageOptions: PageOptions) {
-    return pageFactory(pageOptions.components, pageOptions.config)
+        let instance = new Constr
+
+        let data = {}
+
+        let methods = {}
+
+        let events = {}
+
+        Constr.dataNames && Constr.dataNames.forEach(name => data[name] = instance[name])
+        Constr.methodNames && Constr.methodNames.forEach(name => methods[name] = instance[name])
+        Constr.eventNames && Constr.eventNames.forEach(name => events[name] = instance[name])
+
+        let { components, config } = pageOptions
+
+        class Page extends wepy.default.page {
+
+            components = components || {}
+
+            config = config || {}
+
+            data = data
+
+            methods = methods
+
+            events = events
+
+            onLoad() {
+                instance.onLoad && instance.onLoad.call(this)
+            }
+        }
+
+        // assign pageEvents
+        pageEvent.forEach(e => {
+            if (instance[e]) {
+                Page.prototype[e] = instance[e]
+            }
+        })
+
+        return Page
+    }
 }
 
 export function data(target, propName) {
