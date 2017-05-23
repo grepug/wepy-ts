@@ -9,7 +9,7 @@ export function AppDecor (appDecorOptions: AppDecorOptions) {
 
         let instance = new Constr
 
-        class NewConstr extends wepy.default.app {
+        class App extends wepy.default.app {
 
             config = appDecorOptions.config
 
@@ -18,9 +18,9 @@ export function AppDecor (appDecorOptions: AppDecorOptions) {
         }
         ['onLaunch'].forEach(e => {
             if (instance[e]) {
-                NewConstr.prototype[e] = instance[e]
+                App.prototype[e] = instance[e]
             }
         })
-        return NewConstr
+        return App
     }
 }

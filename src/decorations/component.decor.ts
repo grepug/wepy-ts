@@ -42,6 +42,19 @@ export function ComponentDecor(components?) {
             }
         })
 
+        Object.getOwnPropertyNames(Constr.prototype).forEach(name => {
+            if (
+                name !== 'construtor' &&
+                pageEvent.indexOf(name) === -1 &&
+                (Constr.methodNames ? Constr.methodNames.indexOf(name) === -1 : true) &&
+                (Constr.eventNames ? Constr.eventNames.indexOf(name) === -1 : true) &&
+                typeof instance[name] === 'function' &&
+                name[0] !== '$'
+            ) {
+                Component.prototype[name] = instance[name]
+            }
+        })
+
         return Component
     }
 }
@@ -84,6 +97,19 @@ export function PageDecor(pageOptions: PageOptions = {}) {
         pageEvent.forEach(e => {
             if (instance[e]) {
                 Page.prototype[e] = instance[e]
+            }
+        })
+
+        Object.getOwnPropertyNames(Constr.prototype).forEach(name => {
+            if (
+                name !== 'construtor' &&
+                pageEvent.indexOf(name) === -1 &&
+                (Constr.methodNames ? Constr.methodNames.indexOf(name) === -1 : true) &&
+                (Constr.eventNames ? Constr.eventNames.indexOf(name) === -1 : true) &&
+                typeof instance[name] === 'function' &&
+                name[0] !== '$'
+            ) {
+                Page.prototype[name] = instance[name]
             }
         })
 
